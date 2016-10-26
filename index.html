@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style> .hidden{display:none;} </style>
+<script>
+
+// Instagram api url constants
+// Constantes para montar a url de consulta via ajax
+const apiSrc1 = "https://api.instagram.com/v1/tags/";
+const apiSrc2 = "/media/recent?access_token=";
+
+// Run an ajax api request
+// Executa uma consulta ajax aa API
+function do_request(tag, token){
+
+	// set api url request
+	var script = document.createElement('script');
+	script.src = apiSrc1+tag+apiSrc2+token+"&callback=show_data";
+
+	// add api request to header as a jsonp request
+	document.getElementsByTagName('head')[0].appendChild(script);
+
+	// display api url into textarea
+	document.getElementById('taEnvio').innerHTML = script.src;
+	// or document.head.appendChild(script) in modern browsers
+}
+
+
+// Shows retrieved data
+// Exibe os dados retornados
+function show_data(data){
+	var dados = data;
+
+	document.getElementById('taRetorno').innerHTML = JSON.stringify(dados);
+
+	var userReadableOutput = "";
+
+	userReadableOutput = "Fectched "+dados.data.length+" records :";
+	for (var i=0; i< dados.data.length; i++){
+		userReadableOutput += "<br><a href=\""+dados.data[i].link+"\" target=\"new\">";
+		userReadableOutput += "<img src='"+dados.data[i].images.standard_resolution.url+"'  ></a>";
+		userReadableOutput += "<br>"+dados.data[i].caption.text;
+		userReadableOutput += "<br>"+dados.data[i].likes.count+" likes ";
+		userReadableOutput += "<hr>";
+	}
+
+	document.getElementById('divUrd').innerHTML = userReadableOutput;
+}
+
+
+// Show request/display code
+// Exibe o trecho de código da consulta
+function show_the_code(){
+	if (document.getElementById('divCode').className == "hidden")
+		document.getElementById('divCode').className = "";
+	else document.getElementById('divCode').className = "hidden";
+}
+</script>
+</head>
+<body>
+	<h1> Instagram API Test</h1>
+	<h3> Client Info </h3>
+	<form>
+		<table>
+		<tr><td>
+		Client Token</td><td> <input name="clientToken" id="clientToken" size="80" value="175973212.617bc41.c33ebaf54122473ab8d9f642ec5fecd2"><br></td></tr>
+		<tr><td>
+		Tag </td><td><input name="edtTag" id="edtTag" value="guitar"><br></td></tr></table>
+	</form>
+		<button type="button" onclick="do_request( edtTag.value, clientToken.value)">Search</button>
+		<button type="button" onclick="show_the_code(edtTag.value, clientToken.value)">Show me the code </button>
+
+	<div id="divCode" class="hidden">
+	<hr>
+	<pre>
+
+// Instagram api url constants
+var apiSrc1 = "https://api.instagram.com/v1/tags/";
+var apiSrc2 = "/media/recent?access_token=";
+
+// do the ajax jsonp request
+function do_request(tag, token){
+
+	var script = document.createElement('script');
+	script.src = apiSrc1+tag+apiSrc2+token+"&callback=show_data";
+
+	document.getElementsByTagName('head')[0].appendChild(script);
+
+	document.getElementById('taEnvio').innerHTML = script.src;
+	// or document.head.appendChild(script) in modern browsers
+}
+
+// callback function
+function show_data(data){
+	var dados = data;
+
+	document.getElementById('taRetorno').innerHTML = JSON.stringify(dados);
+
+	var userReadableOutput = "";
+
+	userReadableOutput = "Fectched "+dados.data.length+" records :";
+
+	for (var i=0; i< dados.data.length; i++){
+		userReadableOutput += "&lt;br>&lt;a href=\""+dados.data[i].link+"\" target=\"new\">";
+		userReadableOutput += "&lt;img src='"+dados.data[i].images.standard_resolution.url+"'  ></a>";
+		userReadableOutput += "&lt;br>"+dados.data[i].caption.text;
+		userReadableOutput += "&lt;br>"+dados.data[i].likes.count+" likes ";
+		userReadableOutput += "&lt;hr>";
+	}
+
+	document.getElementById('divUrd').innerHTML = userReadableOutput;
+}
+
+
+&lt;!-- HTML search button -->
+&lt;button type="button" onclick="do_request( edtTag.value, clientToken.value)">Search&lt;/button>
+
+	</pre>
+	<hr>
+	</div>	
+	<h4> JSONP Request </h4>
+	<textarea id="taEnvio" cols="80" rows="3">
+	</textarea>
+	<h4> JSON Response </h4>
+	<textarea id="taRetorno" cols="80" rows="7">
+	</textarea>
+	<h4> User Readable Data </h4>
+	<div id="divUrd"></div>
+
+
+
+</body>
+</html>
+
